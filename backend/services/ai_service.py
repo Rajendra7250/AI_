@@ -13,7 +13,7 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 # Initialize the client only if a valid API key is present
 client = None
-if GEMINI_API_KEY and GEMINI_API_KEY != "your_gemini_api_key_here":
+if GEMINI_API_KEY:
     try:
         client = genai.Client(api_key=GEMINI_API_KEY)
     except Exception as e:
