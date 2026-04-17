@@ -2,21 +2,45 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { FileDown, Sparkles, Send } from "lucide-react";
+import { FileDown, Sparkles, Send, AlertTriangle } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 export default function ResumeBuilderPage() {
   const [formData, setFormData] = useState({ name: "", role: "", experience: "", skills: "" });
   const [isGenerating, setIsGenerating] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsGenerating(true);
-    // Simulate API call
-    setTimeout(() => setIsGenerating(false), 2000);
+    setError(null);
+    setResult(null);
+    
+    try {
+      const res = await fetch("http://127.0.0.1:8000/resume/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      if (!res.ok) {
+        throw new Error("Failed to generate resume");
+      }
+      
+      const data = await res.json();
+      setResult(data.resume_markdown);
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 pb-12">
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-4xl font-extrabold text-white mb-2">AI Resume Builder</h1>
         <p className="text-gray-400">Transform your experiences into an ATS-friendly masterpiece.</p>
@@ -34,6 +58,7 @@ export default function ResumeBuilderPage() {
                   placeholder="John Doe"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
                 />
               </div>
               <div>
@@ -44,6 +69,7 @@ export default function ResumeBuilderPage() {
                   placeholder="Senior Frontend Developer"
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  required
                 />
               </div>
             </div>
@@ -56,6 +82,7 @@ export default function ResumeBuilderPage() {
                 placeholder="List your key achievements, companies, and metrics..."
                 value={formData.experience}
                 onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
+                required
               />
             </div>
 
@@ -67,8 +94,16 @@ export default function ResumeBuilderPage() {
                 placeholder="React, Next.js, Python, System Design..."
                 value={formData.skills}
                 onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
+                required
               />
             </div>
+
+            {error && (
+              <div className="flex items-center space-x-2 text-red-400 bg-red-400/10 p-4 rounded-xl border border-red-400/20">
+                <AlertTriangle size={20} />
+                <span>{error}</span>
+              </div>
+            )}
 
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -93,6 +128,19 @@ export default function ResumeBuilderPage() {
             </motion.button>
           </form>
         </motion.div>
+
+        {result && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass p-8 rounded-3xl relative">
+            <button className="absolute top-6 right-6 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-primary transition-colors flex items-center gap-2">
+              <FileDown size={18} />
+              <span className="text-sm font-medium">Download PDF</span>
+            </button>
+            <h2 className="text-2xl font-bold text-white mb-6 pr-32">Generated Resume</h2>
+            <div className="prose prose-invert prose-primary max-w-none">
+              <ReactMarkdown>{result}</ReactMarkdown>
+            </div>
+          </motion.div>
+        )}
       </div>
     </div>
   );
