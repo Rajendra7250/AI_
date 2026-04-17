@@ -33,14 +33,18 @@ def generate_resume_content(user_data: dict) -> str:
     Make it professional and impactful.
     """
     
-    response = client.models.generate_content(
-        model='gemini-2.0-flash',
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            temperature=0.7,
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.7,
+            )
         )
-    )
-    return response.text
+        return response.text
+    except Exception as e:
+        print(f"Gemini API Error: {e}")
+        return "# Mocked Resume\n\n- Experience: " + user_data.get("experience", "N/A") + "\n- Skills: " + user_data.get("skills", "N/A") + "\n\n(Note: Falling back to mocked version due to API error: invalid or missing API key.)"
 
 def generate_interview_questions(role: str, experience_level: str) -> str:
     """
@@ -55,14 +59,18 @@ def generate_interview_questions(role: str, experience_level: str) -> str:
     Return the output in Markdown format.
     """
     
-    response = client.models.generate_content(
-        model='gemini-2.0-flash',
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            temperature=0.7,
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.7,
+            )
         )
-    )
-    return response.text
+        return response.text
+    except Exception as e:
+        print(f"Gemini API Error: {e}")
+        return f"# Mocked Interview Questions for {role} ({experience_level})\n\n1. Technical Q1\n2. Technical Q2\n3. Technical Q3\n4. Behavioral Q1\n5. Behavioral Q2\n\n(Note: Falling back to mocked version due to API error: invalid or missing API key.)"
 
 def provide_interview_feedback(question: str, user_answer: str) -> str:
     """
@@ -79,12 +87,16 @@ def provide_interview_feedback(question: str, user_answer: str) -> str:
     Provide constructive feedback. Mention what was good, what was missing, and give a score out of 10.
     """
     
-    response = client.models.generate_content(
-        model='gemini-2.0-flash',
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            temperature=0.5,
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.5,
+            )
         )
-    )
-    return response.text
+        return response.text
+    except Exception as e:
+        print(f"Gemini API Error: {e}")
+        return f"# Mocked Feedback\n\nQuestion: {question}\nYour Answer: {user_answer}\n\nFeedback: Good attempt. Score: 7/10. (Note: Falling back to mocked version due to API error: invalid or missing API key.)"
 

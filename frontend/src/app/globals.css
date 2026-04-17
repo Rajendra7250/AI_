@@ -41,4 +41,16 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
+  .glass-shift {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  
+  .glass-shift:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 15px 40px -10px rgba(255, 122, 24, 0.25), 
+                0 0 30px -5px rgba(255, 60, 172, 0.25);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
 }
